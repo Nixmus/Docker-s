@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mi App Full Stack</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        button { background: #007acc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #005c99; }
+        .response { background: #e8f4fd; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        h1 { color: #333; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Mi Aplicación Full Stack</h1>
+        <p><strong>Frontend:</strong> HTML + JavaScript</p>
+        <p><strong>Backend:</strong> Python Server</p>
+        
+        <button onclick="obtenerSaludo()">Obtener Saludo</button>
+        <button onclick="incrementarContador()">Incrementar Contador</button>
+        
+        <div id="respuesta" class="response" style="display:none;">
+            <h3>Respuesta del Backend:</h3>
+            <pre id="contenido-respuesta"></pre>
+        </div>
+    </div>
+
+    <script>
+        async function obtenerSaludo() {
+            try {
+                const response = await fetch("/api/saludo");
+                const data = await response.json();
+                mostrarRespuesta(data);
+            } catch (error) {
+                mostrarRespuesta({error: "No se pudo conectar con el backend"});
+            }
+        }
+
+        async function incrementarContador() {
+            try {
+                const response = await fetch("/api/contador");
+                const data = await response.json();
+                mostrarRespuesta(data);
+            } catch (error) {
+                mostrarRespuesta({error: "No se pudo conectar con el backend"});
+            }
+        }
+
+        function mostrarRespuesta(data) {
+            document.getElementById("respuesta").style.display = "block";
+            document.getElementById("contenido-respuesta").textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

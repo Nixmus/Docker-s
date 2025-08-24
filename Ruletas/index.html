@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ruleta Convencional</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        h1 { 
+            color: #fff; 
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .ruleta-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ruleta-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .ruleta {
+            width: 350px;
+            height: 350px;
+            border: 8px solid #fff;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            background: #fff;
+        }
+
+        .sector {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            border: 2px solid rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sector 1 - Azul (85.4%) - Ocupa más espacio */
+        .sector:nth-child(1) { 
+            background: #4285f4; 
+            transform: rotate(0deg) skewY(-48.6deg);
+            border-color: #1a73e8;
+        }
+        .sector:nth-child(2) { 
+            background: #4285f4; 
+            transform: rotate(51.4deg) skewY(-48.6deg);
+            border-color: #1a73e8;
+        }
+        .sector:nth-child(3) { 
+            background: #4285f4; 
+            transform: rotate(102.8deg) skewY(-48.6deg);
+            border-color: #1a73e8;
+        }
+        .sector:nth-child(4) { 
+            background: #4285f4; 
+            transform: rotate(154.2deg) skewY(-48.6deg);
+            border-color: #1a73e8;
+        }
+        .sector:nth-child(5) { 
+            background: #4285f4; 
+            transform: rotate(205.6deg) skewY(-48.6deg);
+            border-color: #1a73e8;
+        }
+        .sector:nth-child(6) { 
+            background: #4285f4; 
+            transform: rotate(257deg) skewY(-48.6deg);
+            border-color: #1a73e8;
+        }
+
+        /* Sector 2 - Morado (13%) */
+        .sector:nth-child(7) { 
+            background: #9c27b0; 
+            transform: rotate(308.4deg) skewY(-46.8deg);
+            border-color: #7b1fa2;
+        }
+
+        /* Sector 3 - Amarillo (1.6%) */
+        .sector:nth-child(8) { 
+            background: #ffc107; 
+            transform: rotate(355.2deg) skewY(-4.8deg);
+            border-color: #ff8f00;
+        }
+
+        .numero {
+            position: absolute;
+            font-weight: bold;
+            font-size: 24px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 5;
+        }
+
+        .numero1 { top: 30%; right: 20%; transform: rotate(25deg); }
+        .numero2 { bottom: 25%; left: 45%; transform: rotate(330deg); }
+        .numero3 { top: 45%; right: 8%; transform: rotate(357deg); }
+
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 35px solid #fff;
+            z-index: 10;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+        }
+
+        .spin-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .spin-btn:hover {
+            background: linear-gradient(45deg, #ff5252, #e53935);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .spin-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .resultado {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            font-size: 20px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .pity-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .historial-section {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            min-width: 350px;
+        }
+
+        .historial-section h2 {
+            margin-top: 0;
+            color: #fff;
+            text-align: center;
+        }
+
+        .historial-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .historial-table th,
+        .historial-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .historial-table th {
+            background: rgba(255,255,255,0.15);
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .historial-table td {
+            color: #f0f0f0;
+        }
+
+        .resultado-azul { background-color: rgba(66, 133, 244, 0.3) !important; }
+        .resultado-morado { background-color: rgba(156, 39, 176, 0.3) !important; }
+        .resultado-amarillo { background-color: rgba(255, 193, 7, 0.3) !important; }
+
+        .clear-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .estadisticas {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .estadisticas h3 {
+            margin-top: 0;
+            text-align: center;
+            color: #fff;
+        }
+
+        .probabilidades {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .color-azul { color: #4285f4; font-weight: bold; }
+        .color-morado { color: #e1bee7; font-weight: bold; }
+        .color-amarillo { color: #fff59d; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .historial-section {
+                min-width: auto;
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>¡Let's go gambling!</h1>
+    
+    <div class="container">
+        <div class="ruleta-section">
+            <div class="ruleta-container">
+                <div class="pointer"></div>
+                <div class="ruleta" id="ruleta">
+                    <!-- Sectores azules (85.4%) -->
+                    <div class="sector"></div>
+                    <div class="sector"></div>
+                    <div class="sector"></div>
+                    <div class="sector"></div>
+                    <div class="sector"></div>
+                    <div class="sector"></div>
+                    <!-- Sector morado (13%) -->
+                    <div class="sector"></div>
+                    <!-- Sector amarillo (1.6%) -->
+                    <div class="sector"></div>
+                    
+                    <div class="numero numero1 color-azul">1</div>
+                    <div class="numero numero2 color-morado">2</div>
+                    <div class="numero numero3 color-amarillo">3</div>
+                </div>
+            </div>
+            
+            <button class="spin-btn" onclick="girarRuleta()" id="spinBtn">GIRAR RULETA</button>
+            
+            <div class="resultado" id="resultado">¡Presiona el botón para girar!</div>
+            
+            <div class="pity-info">
+                <div>🛡️ Protección Azul: <span id="pityAzul">0</span>/10 tiros</div>
+                <div>⭐ Protección Amarillo: <span id="pityAmarillo">0</span>/90 tiros</div>
+            </div>
+
+            <div class="probabilidades">
+                <h4>📊 Probabilidades Base:</h4>
+                <div><span class="color-azul">● Azul (1):</span> 85.4%</div>
+                <div><span class="color-morado">● Morado (2):</span> 13.0%</div>
+                <div><span class="color-amarillo">● Amarillo (3):</span> 1.6%</div>
+            </div>
+        </div>
+
+        <div class="historial-section">
+            <h2>📊 Historial de Resultados</h2>
+            <table class="historial-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Color</th>
+                        <th>Hora</th>
+                        <th>Pity</th>
+                    </tr>
+                </thead>
+                <tbody id="historialBody">
+                </tbody>
+            </table>
+            
+            <button class="clear-btn" onclick="limpiarHistorial()">Limpiar Historial</button>
+            
+            <div class="estadisticas">
+                <h3>📈 Estadísticas</h3>
+                <div id="estadisticas">
+                    <p>Total de giros: <span id="totalGiros">0</span></p>
+                    <p><span class="color-azul">Azules:</span> <span id="totalAzul">0</span> (<span id="porcentajeAzul">0%</span>)</p>
+                    <p><span class="color-morado">Morados:</span> <span id="totalMorado">0</span> (<span id="porcentajeMorado">0%</span>)</p>
+                    <p><span class="color-amarillo">Amarillos:</span> <span id="totalAmarillo">0</span> (<span id="porcentajeAmarillo">0%</span>)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let girando = false;
+        let contadorGiros = 0;
+        let historialResultados = [];
+        let frecuencias = {1: 0, 2: 0, 3: 0};
+        
+        // Sistema de pity
+        let pityAzul = 0;  // Contador para protección azul (cada 10)
+        let pityAmarillo = 0;  // Contador para protección amarillo (cada 90)
+
+        function determinarResultado() {
+            // Verificar pity system primero
+            if (pityAzul >= 10) {
+                pityAzul = 0;
+                return 1; // Forzar azul
+            }
+            
+            if (pityAmarillo >= 90) {
+                pityAmarillo = 0;
+                return 3; // Forzar amarillo
+            }
+            
+            // Probabilidades normales
+            const random = Math.random() * 100;
+            
+            if (random < 1.6) {
+                pityAmarillo = 0;
+                return 3; // Amarillo (1.6%)
+            } else if (random < 14.6) { // 1.6 + 13 = 14.6
+                return 2; // Morado (13%)
+            } else {
+                pityAzul = 0;
+                return 1; // Azul (85.4%)
+            }
+        }
+
+        function girarRuleta() {
+            if (girando) return;
+            
+            girando = true;
+            document.getElementById('spinBtn').disabled = true;
+            document.getElementById('resultado').textContent = '¡Girando...';
+            
+            const ruleta = document.getElementById('ruleta');
+            const numeroGanador = determinarResultado();
+            
+            // Incrementar contadores de pity
+            pityAzul++;
+            pityAmarillo++;
+            
+            // Si el resultado es azul o amarillo, resetear sus respectivos contadores
+            if (numeroGanador === 1) {
+                pityAzul = 0;
+            } else if (numeroGanador === 3) {
+                pityAmarillo = 0;
+            }
+            
+            // Calcular ángulo basado en el resultado
+            let anguloBase;
+            switch (numeroGanador) {
+                case 1: // Azul - sector más grande
+                    anguloBase = Math.random() * 307.4; // 0-307.4 grados
+                    break;
+                case 2: // Morado
+                    anguloBase = 308.4 + Math.random() * 46.8; // 308.4-355.2 grados
+                    break;
+                case 3: // Amarillo
+                    anguloBase = 355.2 + Math.random() * 4.8; // 355.2-360 grados
+                    break;
+            }
+            
+            const rotacionExtra = 360 * 4; // 4 vueltas completas
+            const anguloFinal = rotacionExtra + (360 - anguloBase);
+            
+            ruleta.style.transform = `rotate(${anguloFinal}deg)`;
+            
+            setTimeout(() => {
+                registrarResultado(numeroGanador);
+                actualizarPityDisplay();
+                
+                const colores = {1: 'Azul', 2: 'Morado', 3: 'Amarillo'};
+                const emojis = {1: '🔵', 2: '🟣', 3: '🟡'};
+                
+                document.getElementById('resultado').innerHTML = 
+                    `${emojis[numeroGanador]} <strong>¡Salió ${colores[numeroGanador]} (${numeroGanador})!</strong>`;
+                
+                girando = false;
+                document.getElementById('spinBtn').disabled = false;
+            }, 3000);
+        }
+
+        function actualizarPityDisplay() {
+            document.getElementById('pityAzul').textContent = pityAzul;
+            document.getElementById('pityAmarillo').textContent = pityAmarillo;
+        }
+
+        function registrarResultado(numero) {
+            contadorGiros++;
+            const ahora = new Date();
+            const hora = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
+            
+            // Determinar si fue por pity
+            let esPity = '';
+            if ((numero === 1 && pityAzul === 0 && contadorGiros > 1) ||
+                (numero === 3 && pityAmarillo === 0 && contadorGiros > 1)) {
+                esPity = '🛡️';
+            }
+            
+            // Agregar al historial
+            historialResultados.unshift({
+                giro: contadorGiros,
+                numero: numero,
+                hora: hora,
+                pity: esPity
+            });
+            
+            // Mantener solo los últimos 15 resultados en la tabla
+            if (historialResultados.length > 15) {
+                historialResultados.pop();
+            }
+            
+            // Actualizar frecuencias
+            frecuencias[numero]++;
+            
+            actualizarTablaHistorial();
+            actualizarEstadisticas();
+        }
+
+        function actualizarTablaHistorial() {
+            const tbody = document.getElementById('historialBody');
+            tbody.innerHTML = '';
+            
+            const colores = {1: 'Azul', 2: 'Morado', 3: 'Amarillo'};
+            const clases = {1: 'resultado-azul', 2: 'resultado-morado', 3: 'resultado-amarillo'};
+            
+            historialResultados.forEach((resultado, index) => {
+                const row = tbody.insertRow();
+                row.className = clases[resultado.numero];
+                row.innerHTML = `
+                    <td>${resultado.giro}</td>
+                    <td><strong>${colores[resultado.numero]}</strong></td>
+                    <td>${resultado.hora}</td>
+                    <td>${resultado.pity}</td>
+                `;
+                
+                // Destacar el resultado más reciente
+                if (index === 0) {
+                    row.style.border = '2px solid rgba(255, 255, 255, 0.5)';
+                }
+            });
+        }
+
+        function actualizarEstadisticas() {
+            document.getElementById('totalGiros').textContent = contadorGiros;
+            document.getElementById('totalAzul').textContent = frecuencias[1];
+            document.getElementById('totalMorado').textContent = frecuencias[2];
+            document.getElementById('totalAmarillo').textContent = frecuencias[3];
+            
+            if (contadorGiros > 0) {
+                document.getElementById('porcentajeAzul').textContent = 
+                    ((frecuencias[1] / contadorGiros) * 100).toFixed(1) + '%';
+                document.getElementById('porcentajeMorado').textContent = 
+                    ((frecuencias[2] / contadorGiros) * 100).toFixed(1) + '%';
+                document.getElementById('porcentajeAmarillo').textContent = 
+                    ((frecuencias[3] / contadorGiros) * 100).toFixed(1) + '%';
+            } else {
+                document.getElementById('porcentajeAzul').textContent = '0%';
+                document.getElementById('porcentajeMorado').textContent = '0%';
+                document.getElementById('porcentajeAmarillo').textContent = '0%';
+            }
+        }
+
+        function limpiarHistorial() {
+            if (confirm('¿Estás seguro de que quieres limpiar el historial y resetear el pity system?')) {
+                historialResultados = [];
+                contadorGiros = 0;
+                frecuencias = {1: 0, 2: 0, 3: 0};
+                pityAzul = 0;
+                pityAmarillo = 0;
+                
+                actualizarTablaHistorial();
+                actualizarEstadisticas();
+                actualizarPityDisplay();
+                
+                document.getElementById('resultado').textContent = '¡Presiona el botón para girar!';
+            }
+        }
+
+        // Inicializar display
+        actualizarPityDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Virtual</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="game-section">
+            <h1>Ruleta Virtual</h1>
+            
+            <div class="roulette-container">
+                <div class="roulette" id="roulette"></div>
+                <div class="pointer"></div>
+                <div class="numbers">
+                    <div class="number yellow-num">3</div>
+                    <div class="number purple-num">2</div>
+                    <div class="number blue-num">1</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="spinBtn" class="spin-btn">GIRAR RULETA</button>
+                <button id="spin10Btn" class="spin10-btn">TIRAR 10</button>
+                <button id="resetBtn" class="reset-btn">REINICIAR</button>
+            </div>
+            
+            <div class="result-display">
+                <h3>Último Resultado:</h3>
+                <div id="lastResult" class="result-box">-</div>
+            </div>
+            
+            <div class="stats">
+                <h3>Estadísticas:</h3>
+                <div class="stat-item">
+                    <span>Total de giros: <strong id="totalSpins">0</strong></span>
+                </div>
+                <div class="stat-item">
+                    <span>Azul: <strong id="blueCount">0</strong> (<span id="bluePercent">0%</span>)</span>
+                </div>
+                <div class="stat-item">
+                    <span>Morado: <strong id="purpleCount">0</strong> (<span id="purplePercent">0%</span>)</span>
+                </div>
+                <div class="stat-item">
+                    <span>Amarillo: <strong id="yellowCount">0</strong> (<span id="yellowPercent">0%</span>)</span>
+                </div>
+                <div class="guarantee-info">
+                    <small>Garantías: Morado cada 10 tiros • Amarillo cada 90 tiros</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="history-section">
+            <h2>Historial de Resultados</h2>
+            <div class="history-table">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Color</th>
+                            <th>Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
