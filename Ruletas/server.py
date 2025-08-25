@@ -3,90 +3,29 @@ from flask_cors import CORS
 import random
 import json
 from datetime import datetime
-import sqlite3
-import os
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app)
 
-
-# --- SQLite integration ---
-DB_PATH = os.path.join(os.path.dirname(__file__), 'giros.db')
-
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS giros (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        spin_number INTEGER,
-        result INTEGER,
-        color TEXT,
-        timestamp TEXT
-    )''')
-    conn.commit()
-    conn.close()
-
-def insert_giro(spin_number, result, color, timestamp):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('INSERT INTO giros (spin_number, result, color, timestamp) VALUES (?, ?, ?, ?)',
-              (spin_number, result, color, timestamp))
-    conn.commit()
-    conn.close()
-
-def get_giros(limit=100):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('SELECT spin_number, result, color, timestamp FROM giros ORDER BY id DESC LIMIT ?', (limit,))
-    rows = c.fetchall()
-    conn.close()
-    # Return in ascending order
-    return [
-        {"spin_number": row[0], "result": row[1], "color": row[2], "timestamp": row[3]}
-        for row in reversed(rows)
-    ]
-
-def get_total_spins():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('SELECT COUNT(*) FROM giros')
-    total = c.fetchone()[0]
-    conn.close()
-    return total
-
-def get_last_spin_number():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('SELECT MAX(spin_number) FROM giros')
-    last = c.fetchone()[0]
-    conn.close()
-    return last or 0
-
-def get_last_spin_by_color(color):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('SELECT spin_number FROM giros WHERE color = ? ORDER BY spin_number DESC LIMIT 1', (color,))
-    row = c.fetchone()
-    conn.close()
-    return row[0] if row else 0
-
 class RuletaGame:
     def __init__(self):
+        self.results_history = []
+        self.spin_count = 0
+        self.last_purple_spin = 0
+        self.last_yellow_spin = 0
         self.colors = {
             1: {"name": "azul", "probability": 85.4},
-            2: {"name": "morado", "probability": 13.0},
+            2: {"name": "morado", "probability": 13.0}, 
             3: {"name": "amarillo", "probability": 1.6}
         }
-        init_db()
-        self.spin_count = get_last_spin_number()
-        self.last_purple_spin = get_last_spin_by_color("morado")
-        self.last_yellow_spin = get_last_spin_by_color("amarillo")
-
+    
     def spin(self):
         self.spin_count += 1
+        
+        # Verificar garantías
         spins_since_purple = self.spin_count - self.last_purple_spin
         spins_since_yellow = self.spin_count - self.last_yellow_spin
-
+        
         # Garantía: morado cada 10 tiros
         if spins_since_purple >= 10:
             result = 2  # morado
@@ -96,42 +35,50 @@ class RuletaGame:
             result = 3  # amarillo
             self.last_yellow_spin = self.spin_count
         else:
+            # Probabilidades normales
             rand = random.uniform(0, 100)
             if rand <= 1.6:
                 result = 3  # amarillo
                 self.last_yellow_spin = self.spin_count
-            elif rand <= 14.6:
+            elif rand <= 14.6:  # 1.6 + 13
                 result = 2  # morado
                 self.last_purple_spin = self.spin_count
             else:
                 result = 1  # azul
-
-        color = self.colors[result]["name"]
-        timestamp = datetime.now().isoformat()
+        
+        # Registrar resultado
         spin_result = {
             "spin_number": self.spin_count,
             "result": result,
-            "color": color,
-            "timestamp": timestamp
+            "color": self.colors[result]["name"],
+            "timestamp": datetime.now().isoformat()
         }
-        insert_giro(self.spin_count, result, color, timestamp)
+        
+        self.results_history.append(spin_result)
+        
+        # Mantener solo los últimos 100 resultados
+        if len(self.results_history) > 100:
+            self.results_history.pop(0)
+            
         return spin_result
-
+    
     def get_statistics(self):
-        history = get_giros(100)
-        if not history:
+        if not self.results_history:
             return {"total_spins": 0, "color_counts": {}}
+        
         color_counts = {"azul": 0, "morado": 0, "amarillo": 0}
-        for result in history:
+        for result in self.results_history:
             color_counts[result["color"]] += 1
-        total = len(history)
+        
+        total = len(self.results_history)
         percentages = {
             color: round((count / total) * 100, 2) if total > 0 else 0
             for color, count in color_counts.items()
         }
+        
         return {
-            "total_spins": get_total_spins(),
-            "results_shown": len(history),
+            "total_spins": self.spin_count,
+            "results_shown": len(self.results_history),
             "color_counts": color_counts,
             "percentages": percentages,
             "spins_since_last_purple": self.spin_count - self.last_purple_spin,
@@ -162,19 +109,15 @@ def spin_roulette():
 @app.route('/api/history', methods=['GET'])
 def get_history():
     """Obtener historial de resultados"""
-    history = get_giros(100)
     return jsonify({
         "success": True,
-        "history": history,
+        "history": game.results_history,
         "statistics": game.get_statistics()
     })
 
 @app.route('/api/reset', methods=['POST'])
 def reset_game():
     """Reiniciar el juego"""
-    # Borrar la base de datos
-    if os.path.exists(DB_PATH):
-        os.remove(DB_PATH)
     global game
     game = RuletaGame()
     return jsonify({

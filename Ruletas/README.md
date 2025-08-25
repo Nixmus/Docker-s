@@ -52,6 +52,77 @@ Ruletas/
    docker run -p 5000:5000 ruleta-virtual
    ```
 
+### Opción 2: Ejecución Local
+
+1. **Instalar dependencias:**
+   ```bash
+   pip install Flask==2.3.3 Flask-CORS==4.0.0
+   ```
+
+2. **Ejecutar servidor:**
+   ```bash
+   python server.py
+   ```
+
+3. **Abrir en navegador:**
+   ```
+   http://localhost:5000
+   ```
+
+## 🚀 Comandos Importantes
+
+### **Servidor Principal:**
+```bash
+# Iniciar servidor de desarrollo
+python server.py
+
+# Con Docker
+docker build -t ruleta-virtual .
+docker run -p 5000:5000 ruleta-virtual
+```
+
+### **Pruebas de Carga:**
+```bash
+# Monitor de rendimiento (ejecutar primero)
+python performance_monitor.py
+
+# Generador de tráfico simple
+python simple_traffic.py --level medium --duration 60
+
+# Generador avanzado (requiere: pip install aiohttp)
+python traffic_generator.py --level high --duration 90
+```
+
+### **Niveles de Tráfico:**
+```bash
+# Tráfico BAJO (2-3 usuarios)
+python simple_traffic.py --level low --duration 30
+
+# Tráfico MEDIO (8 usuarios + continuos)
+python simple_traffic.py --level medium --duration 60
+
+# Tráfico ALTO (15 usuarios + ráfagas)
+python simple_traffic.py --level high --duration 90
+
+# Tráfico EXTREMO (30+ usuarios, stress test)
+python simple_traffic.py --level extreme --duration 120
+```
+
+### **Verificación y Salud:**
+```bash
+# Health check
+curl http://localhost:5000/health
+
+# Estadísticas actuales
+curl http://localhost:5000/api/statistics
+
+# Historial de resultados
+curl http://localhost:5000/api/history
+```
+   ```bash
+   docker run -p 5000:5000 ruleta-virtual
+   ```
+
 3. **Acceder a la aplicación:**
    Abre tu navegador en `http://localhost:5000`
 
@@ -160,19 +231,8 @@ Para contribuir al proyecto:
 6. Crea un Pull Request
 
 ## 📝 Notas
-
-- El archivo `requirements.txt` está marcado como deprecado; las dependencias se instalan directamente en el Dockerfile
 - El servidor se ejecuta en modo debug por defecto para desarrollo
 - La aplicación guarda el estado en memoria (se reinicia al reiniciar el servidor)
 
-## 🚀 Próximas Mejoras
-
-- Persistencia de datos en base de datos
-- Sistema de usuarios y sesiones
-- Más tipos de apuestas
-- Sonidos y efectos visuales mejorados
-- Modo multijugador
-
 ---
 
-**Desarrollado con ❤️ usando Flask y Docker**
