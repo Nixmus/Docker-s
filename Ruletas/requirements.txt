@@ -1,2 +1,0 @@
-# Este archivo será eliminado
-Flask-CORS==4.0.0
