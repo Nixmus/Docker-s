@@ -1,30 +1,30 @@
-# 🎰 Ruleta Virtual
+# Ruleta Virtual
 
 Un simulador de ruleta web desarrollado en Python con Flask que implementa un sistema de probabilidades personalizado con garantías.
 
-## 📋 Descripción
+## Descripción
 
 Este proyecto es una aplicación web que simula una ruleta con tres colores (azul, morado y amarillo) con probabilidades específicas y un sistema de garantías que asegura ciertos resultados después de determinados números de giros.
 
-### 🎨 Características del Juego
+### Características del Juego
 
 - **Tres colores disponibles:**
-  - 🔵 **Azul**: 85.4% de probabilidad
-  - 🟣 **Morado**: 13.0% de probabilidad  
-  - 🟡 **Amarillo**: 1.6% de probabilidad
+  -  **Azul**: 85.4% de probabilidad
+  -  **Morado**: 13.0% de probabilidad  
+  -  **Amarillo**: 1.6% de probabilidad
 
 - **Sistema de garantías:**
   - Morado garantizado cada 10 giros máximo
   - Amarillo garantizado cada 90 giros máximo
 
-## 🚀 Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 - **Backend**: Python 3.9 + Flask
 - **Frontend**: HTML5, CSS3, JavaScript vanilla
 - **Containerización**: Docker
 - **CORS**: Flask-CORS para comunicación entre frontend y backend
 
-## 📁 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 Ruletas/
@@ -38,7 +38,7 @@ Ruletas/
 └── README.md              # Este archivo
 ```
 
-## 🛠️ Instalación y Ejecución
+##  Instalación y Ejecución
 
 ### Opción 1: Con Docker (Recomendado)
 
@@ -69,7 +69,7 @@ Ruletas/
    http://localhost:5000
    ```
 
-## 🚀 Comandos Importantes
+##  Comandos Importantes
 
 ### **Servidor Principal:**
 ```bash
@@ -187,7 +187,7 @@ curl http://localhost:5000/api/history
 }
 ```
 
-## ⚙️ Configuración
+##  Configuración
 
 ### Probabilidades
 Las probabilidades están definidas en la clase `RuletaGame` en `server.py`:
@@ -204,7 +204,7 @@ self.colors = {
 - **Morado**: Forzado después de 10 giros sin morado
 - **Amarillo**: Forzado después de 90 giros sin amarillo
 
-## 🐳 Docker
+##  Docker
 
 El proyecto incluye un `Dockerfile` optimizado que:
 - Usa Python 3.9-slim como base
@@ -212,14 +212,14 @@ El proyecto incluye un `Dockerfile` optimizado que:
 - Expone el puerto 5000
 - Configura el directorio de trabajo en `/app`
 
-## 📊 Funcionalidades Avanzadas
+##  Funcionalidades Avanzadas
 
 - **Historial limitado**: Mantiene solo los últimos 100 resultados en memoria
 - **Estadísticas en tiempo real**: Actualización automática de porcentajes
 - **Animaciones CSS**: Efecto visual de giro de ruleta
 - **Responsive Design**: Interfaz adaptable a diferentes dispositivos
 
-## 🔧 Desarrollo
+##  Desarrollo
 
 Para contribuir al proyecto:
 
@@ -230,9 +230,10 @@ Para contribuir al proyecto:
 5. Push a la rama (`git push origin feature/nueva-funcionalidad`)
 6. Crea un Pull Request
 
-## 📝 Notas
+##  Notas
 - El servidor se ejecuta en modo debug por defecto para desarrollo
 - La aplicación guarda el estado en memoria (se reinicia al reiniciar el servidor)
 
 ---
+
 
