@@ -9,6 +9,8 @@ RUN pip install --no-cache-dir Flask==2.3.3 Flask-CORS==4.0.0
 COPY server.py .
 COPY static/ ./static/
 
+# Exponer puerto
 EXPOSE 5000
 
+# Comando para ejecutar en producción
 CMD ["python", "server.py"]
