@@ -141,7 +141,7 @@ curl http://localhost:5000/api/history
 3. **Acceder a la aplicación:**
    Abre tu navegador en `http://localhost:5000`
 
-## 🎮 Uso de la Aplicación
+## Uso de la Aplicación
 
 ### Interfaz Web
 - **Botón "GIRAR RULETA"**: Realiza un giro individual
@@ -235,5 +235,6 @@ Para contribuir al proyecto:
 - La aplicación guarda el estado en memoria (se reinicia al reiniciar el servidor)
 
 ---
+
 
 
